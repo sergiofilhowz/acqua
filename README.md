@@ -35,7 +35,8 @@ usage
 To use Acqua on your project, just add the commands bellow to your main file.
 
     var acqua = new Acqua({
-    	log : console.log // used to log module imports, optional
+    	log : console.log, // used to log module imports, optional
+    	err : console.err  // used to log errors on module imports, optional
     });
 
     acqua.loadDir(__dirname + '/models');
