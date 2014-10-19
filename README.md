@@ -28,7 +28,7 @@ the other module can inject the dependency for the first module
     	this.moduleName = moduleName;
     };
     
-Modules without name will be executed, but not added to the context;
+**Note**: Modules without name will be executed, but not added to the context;
     
 usage
 =====
