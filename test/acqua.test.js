@@ -27,6 +27,7 @@ describe('Tests on function Acqua', function () {
         acqua.importModule(b);
 
         expect(acqua.get('b').a).to.be.equal(acqua.get('a'));
+
     });
 
     it('should add an already imported module', function () {
@@ -49,6 +50,7 @@ describe('Tests on function Acqua', function () {
         expect(result[0]).to.be.equal('a');
         expect(result[1]).to.be.equal('b');
         expect(result[2]).to.be.equal('c');
+
     });
 
     it('should retrieve function names', function () {
