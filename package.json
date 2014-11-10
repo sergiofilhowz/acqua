@@ -1,6 +1,6 @@
 {
   "name": "acqua",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A NodeJS Module for Dependency Injection",
   "main": "index.js",
   "scripts": {
