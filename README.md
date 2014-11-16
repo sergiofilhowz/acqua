@@ -13,6 +13,8 @@ available functions
 `importModule ( $module ) : this function will execute the function call and then add to the context`
 
 `loadDir ( dir ) : loads an entire directory recursively, searching for .js files to import`
+
+`exec ( func ) : this function will execute the "func" function injecting all dependencies based on function args`
     
 usage
 =====
@@ -53,6 +55,12 @@ It's also possible to pass a custom import function to loadDir, for example
     
 **Note**: All load functions are sync and are meant to be called on startup.
     
+It's possible to exec a function loading all dependencies
+
+    acqua.exec(function (dependencyOne, dependencyTwo) {
+        // function call
+    });
+
 author
 =====
 Sérgio Marcelino (sergiofilhow@gmail.com)

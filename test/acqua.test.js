@@ -71,4 +71,20 @@ describe('Tests on function Acqua', function () {
 
     });
 
+    it('should inject dependencies correctly', function () {
+
+        var acqua = new Acqua();
+
+        acqua.add('one', 1);
+        acqua.add('two', 2);
+        acqua.add('three', 3);
+
+        acqua.exec(function (one, two, three) {
+            expect(one).to.be.equal(1);
+            expect(two).to.be.equal(2);
+            expect(three).to.be.equal(3);
+        });
+
+    });
+
 });
