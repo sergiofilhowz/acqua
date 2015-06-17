@@ -1,20 +1,37 @@
-acqua
-=====
-
+# Acqua
+-
 Acqua is a NodeJS Module for Dependency Injection.
 
 available functions
 =====
 
-`get ( name ) : retrieve a module by it's name from the context`
+`get ( name )` : retrieve a module by it's name from the context
 
-`add ( name , $module ) : adds a module to the context`
+`add ( name , $module )` : adds a module to the context
 
-`importModule ( $module ) : this function will execute the function call and then add to the context`
+`importModule ( $module )` : this function will execute the function call and then add to the context
 
-`loadDir ( dir ) : loads an entire directory recursively, searching for .js files to import`
+`loadDir ( dir )` : loads an entire directory recursively, searching for .js files to import
 
-`exec ( func ) : this function will execute the "func" function injecting all dependencies based on function args`
+`exec ( func )` : this function will execute the "func" function injecting all dependencies based on function args
+
+
+namespaces
+=====
+
+`createNamespace ( name )` : will create an acqua instance namespace and return the instance
+
+`namespace ( name )` : will return a previously namespace instance
+
+acqua dependencies
+=====
+
+Acqua may have dependency to other acqua instances, so when a _module_ is not found while loading modules, acqua will lookup on dependencies.
+
+    var acqua = new Acqua({
+        dependencies : [ anotherAcqua ]
+    });
+
     
 usage
 =====

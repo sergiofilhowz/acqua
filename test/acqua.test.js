@@ -1,8 +1,9 @@
 var chai   = require('chai'),
     expect = chai.expect,
-    Acqua  = require(__dirname + "/../index");
+    Acqua  = require(__dirname + "/../index"),
+    path   = require('path');
 
-describe('Tests on function Acqua', function () {
+describe('Acqua', function () {
 
     it('should have self reference', function () {
 
@@ -84,6 +85,137 @@ describe('Tests on function Acqua', function () {
             expect(two).to.be.equal(2);
             expect(three).to.be.equal(3);
         });
+
+    });
+
+    it('should import modules in any order', function () {
+
+        var acqua = new Acqua();
+        acqua.loadDir(path.join(__dirname, 'mocks'));
+
+        var one = acqua.get('one'),
+            two = acqua.get('two');
+
+        expect(one).to.exist;
+        expect(two).to.exist;
+        expect(one).to.have.property('two').be.equal(two);
+
+    });
+
+    it('should handle context dependencies', function () {
+
+        var acqua = new Acqua();
+
+        acqua.add('one', 1);
+        acqua.add('two', 2);
+        acqua.add('three', 3);
+
+        var anotherAcqua = new Acqua({
+            dependencies : [ acqua ]
+        });
+
+        anotherAcqua.exec(function (one, two, three) {
+            expect(one).to.be.equal(1);
+            expect(two).to.be.equal(2);
+            expect(three).to.be.equal(3);
+        });
+
+        anotherAcqua.add('one', 'one');
+
+        anotherAcqua.exec(function (one, two, three) {
+            expect(one).to.be.equal('one');
+            expect(two).to.be.equal(2);
+            expect(three).to.be.equal(3);
+        });
+
+        acqua.exec(function (one, two, three) {
+            expect(one).to.be.equal(1);
+            expect(two).to.be.equal(2);
+            expect(three).to.be.equal(3);
+        });
+
+    });
+
+    it('should create a namespace', function () {
+        var acqua = new Acqua(),
+            namespace = acqua.createNamespace('aname');
+
+        expect(namespace).to.have.property('name').equal('aname');
+        expect(namespace).to.have.property('parent').equal(acqua);
+        expect(acqua.namespace('aname')).to.exist.be.equal(namespace);
+
+    });
+
+    it('should work with namespaces', function () {
+
+        var acqua = new Acqua(),
+            core = acqua.createNamespace('core'),
+            app = core.createNamespace('app'),
+            one,
+            two,
+            three;
+
+        acqua.add('one', 1);
+
+        one = acqua.get('one');
+        expect(one).to.be.equal(1);
+
+        one = core.get('one');
+        expect(one).to.be.equal(1);
+
+        one = app.get('one');
+        expect(one).to.be.equal(1);
+
+        app.add('two', 2);
+
+        two = acqua.get('two');
+        expect(two).to.not.exist;
+
+        two = core.get('two');
+        expect(two).to.not.exist;
+
+        two = app.get('two');
+        expect(two).to.be.equal(2);
+
+        core.add('three', 3);
+
+        three = acqua.get('three');
+        expect(three).to.not.exist;
+
+        three = core.get('three');
+        expect(three).to.be.equal(3);
+
+        three = app.get('three');
+        expect(three).to.be.equal(3);
+
+    });
+
+    it('should handle parent namespaces on subcontexts', function () {
+
+        var acqua = new Acqua(),
+            anotherAcqua = new Acqua({
+                dependencies : [ acqua ]
+            }),
+            core = acqua.createNamespace('core'),
+            anotherCore = anotherAcqua.createNamespace('core'),
+            one,
+            two;
+
+        acqua.add('one', 1);
+
+        one = acqua.get('one');
+        expect(one).to.be.equal(1);
+
+        one = anotherAcqua.get('one');
+        expect(one).to.be.equal(1);
+
+        one = anotherCore.get('one');
+        expect(one).to.be.equal(1);
+
+        core.add('two', 2);
+
+        two = anotherCore.get('two');
+        expect(two).to.be.equal(2);
 
     });
 
