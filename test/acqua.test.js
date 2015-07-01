@@ -91,7 +91,7 @@ describe('Acqua', function () {
     it('should import modules in any order', function () {
 
         var acqua = new Acqua();
-        acqua.loadDir(path.join(__dirname, 'mocks'));
+        acqua.loadDir(path.join(__dirname, 'mocks/test1'));
 
         var one = acqua.get('one'),
             two = acqua.get('two');
@@ -99,6 +99,23 @@ describe('Acqua', function () {
         expect(one).to.exist;
         expect(two).to.exist;
         expect(one).to.have.property('two').be.equal(two);
+
+    });
+
+    it('should import modules in any order, and show correct error', function () {
+
+        var acqua = new Acqua(),
+            error = false;
+
+        try {
+            acqua.loadDir(path.join(__dirname, 'mocks/test2'));
+        } catch (err) {
+            error = true;
+            expect(err.modules).with.length(1);
+            expect(err.modules[0]).to.have.property('error').be.equal('Dependency module does not exist: three');
+        }
+
+        expect(error).to.be.true;
 
     });
 

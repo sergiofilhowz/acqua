@@ -32,3 +32,7 @@ First Release of Acqua
     var acqua = new Acqua({
         dependencies : [ anotherAcqua ]
     });
+
+# Version 0.0.5
+
+**[HOTFIX]** Fixed an error that was causing the acqua to print 'dependency not found' on a existant module dependency
