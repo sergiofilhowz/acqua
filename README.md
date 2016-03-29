@@ -1,5 +1,7 @@
 # Acqua
 
+[![Build Status](https://travis-ci.org/sergiofilhowz/acqua.svg?branch=master)](https://travis-ci.org/sergiofilhowz/acqua) [![npm version](https://badge.fury.io/js/acqua.svg)](https://badge.fury.io/js/acqua)
+
 Acqua is a NodeJS Module for Dependency Injection.
 
 available functions

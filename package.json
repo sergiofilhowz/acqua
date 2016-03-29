@@ -11,13 +11,8 @@
     "url": "http://github.com/sergiofilhowz/acqua"
   },
   "keywords": [
-    "nodejs",
-    "javascript",
-    "js",
-    "dependency",
-    "injection",
-    "loader",
-    "module"
+    "dependency injection",
+    "module loader"
   ],
   "author": "sergiofilhow@gmail.com",
   "license": "MIT",
