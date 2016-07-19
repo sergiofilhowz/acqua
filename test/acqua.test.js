@@ -1,19 +1,17 @@
 var chai   = require('chai'),
     expect = chai.expect,
-    Acqua  = require(__dirname + "/../index"),
-    path   = require('path');
+    path   = require('path'),
+    fs     = require('fs'),
+    Acqua  = require('../index');
 
 describe('Acqua', function () {
 
     it('should have self reference', function () {
-
         var acqua = new Acqua();
         expect(acqua.get('acqua')).to.be.equal(acqua);
-
     });
 
     it('should import and inject modules correctly', function () {
-
         function a() {
             return this;
         }
@@ -28,21 +26,35 @@ describe('Acqua', function () {
         acqua.importModule(b);
 
         expect(acqua.get('b').a).to.be.equal(acqua.get('a'));
+    });
 
+    it('should import and inject modules correctly with $inject', function () {
+        function oneModule() {
+            return this;
+        }
+
+        anotherModule.$inject = ['oneModule'];
+        function anotherModule(a) {
+            this.oneModule = a;
+            return this;
+        }
+
+        var acqua = new Acqua();
+        acqua.importModule(oneModule);
+        acqua.importModule(anotherModule);
+
+        expect(acqua.get('anotherModule').oneModule).to.be.equal(acqua.get('oneModule'));
     });
 
     it('should add an already imported module', function () {
-
         var acqua = new Acqua(),
             test  = { name : 'test' };
 
         acqua.add('test', test);
         expect(acqua.get('test').name).to.be.equal('test');
-
     });
 
     it('should get param names from functions correctly', function () {
-
         var acqua = new Acqua(),
             result;
 
@@ -51,11 +63,9 @@ describe('Acqua', function () {
         expect(result[0]).to.be.equal('a');
         expect(result[1]).to.be.equal('b');
         expect(result[2]).to.be.equal('c');
-
     });
 
     it('should retrieve function names', function () {
-
         function a() {}
         function b () {}
         var c = function () {};
@@ -69,11 +79,9 @@ describe('Acqua', function () {
         expect(acqua.getFunctionName(c)).to.be.equal(null);
         expect(acqua.getFunctionName(d)).to.be.equal('e');
         expect(acqua.getFunctionName(f)).to.be.equal(null);
-
     });
 
     it('should inject dependencies correctly', function () {
-
         var acqua = new Acqua();
 
         acqua.add('one', 1);
@@ -85,11 +93,45 @@ describe('Acqua', function () {
             expect(two).to.be.equal(2);
             expect(three).to.be.equal(3);
         });
+    });
 
+    it('should inject dependencies correctly with arrow function', function () {
+        var acqua = new Acqua();
+
+        acqua.add('one', 1);
+        acqua.add('two', 2);
+        acqua.add('three', 3);
+
+        acqua.exec((one, two, three) => {
+            expect(one).to.be.equal(1);
+            expect(two).to.be.equal(2);
+            expect(three).to.be.equal(3);
+        });
+
+        acqua.exec(one => {
+            expect(one).to.be.equal(1);
+        });
+    });
+
+    it('should inject dependencies correctly with arrow function', function () {
+        var acqua = new Acqua();
+
+        acqua.add('one', 1);
+        acqua.add('two', 2);
+        acqua.add('three', 3);
+
+        acqua.exec((one, two, three) => {
+            expect(one).to.be.equal(1);
+            expect(two).to.be.equal(2);
+            expect(three).to.be.equal(3);
+        });
+
+        acqua.exec(one => {
+            expect(one).to.be.equal(1);
+        });
     });
 
     it('should import modules in any order', function () {
-
         var acqua = new Acqua();
         acqua.loadDir(path.join(__dirname, 'mocks/test1'));
 
@@ -99,11 +141,9 @@ describe('Acqua', function () {
         expect(one).to.exist;
         expect(two).to.exist;
         expect(one).to.have.property('two').be.equal(two);
-
     });
 
     it('should import modules in any order, and show correct error', function () {
-
         var acqua = new Acqua(),
             error = false;
 
@@ -116,11 +156,9 @@ describe('Acqua', function () {
         }
 
         expect(error).to.be.true;
-
     });
 
     it('should handle context dependencies', function () {
-
         var acqua = new Acqua();
 
         acqua.add('one', 1);
@@ -150,7 +188,6 @@ describe('Acqua', function () {
             expect(two).to.be.equal(2);
             expect(three).to.be.equal(3);
         });
-
     });
 
     it('should create a namespace', function () {
@@ -160,11 +197,9 @@ describe('Acqua', function () {
         expect(namespace).to.have.property('name').equal('aname');
         expect(namespace).to.have.property('parent').equal(acqua);
         expect(acqua.namespace('aname')).to.exist.be.equal(namespace);
-
     });
 
     it('should work with namespaces', function () {
-
         var acqua = new Acqua(),
             core = acqua.createNamespace('core'),
             app = core.createNamespace('app'),
@@ -204,11 +239,9 @@ describe('Acqua', function () {
 
         three = app.get('three');
         expect(three).to.be.equal(3);
-
     });
 
     it('should handle parent namespaces on subcontexts', function () {
-
         var acqua = new Acqua(),
             anotherAcqua = new Acqua({
                 dependencies : [ acqua ]
@@ -233,7 +266,125 @@ describe('Acqua', function () {
 
         two = anotherCore.get('two');
         expect(two).to.be.equal(2);
+    });
 
+    it('should hot swap code', function(done) {
+        this.timeout(10000);
+
+        var acqua = new Acqua({
+            hotswap : true
+        });
+
+        if (!fs.existsSync('tmp')) {
+            fs.mkdirSync('tmp');
+        }
+
+        fs.writeFileSync('tmp/hotswap-test.js', `
+            module.exports = function myModule() {
+                this.amethod = amethod;
+                this.avariable = 'a variable';
+
+                function amethod() {
+                    return 'something';
+                }
+
+                return this;
+            }
+        `);
+
+        acqua.loadDir(path.join(__dirname, '..', 'tmp'));
+        var myModule = acqua.get('myModule');
+
+        expect(myModule.avariable).to.equal('a variable');
+        expect(myModule.amethod()).to.equal('something');
+
+        acqua.emitter.once('change', moduleData => {
+            expect(myModule.avariable).to.equal('another variable');
+            expect(myModule.amethod()).to.equal('something else');
+            expect(myModule.anothermethod).to.be.defined;
+
+            expect(moduleData).to.have.property('filepath').equal(path.join(__dirname, '..', 'tmp', 'hotswap-test.js'));
+            expect(moduleData).to.have.property('module').equal(myModule);
+
+            acqua.emitter.once('change', () => {
+                expect(myModule.avariable).to.equal('a variable');
+                expect(myModule.amethod()).to.equal('something');
+                expect(myModule.anothermethod).to.be.defined;
+                done();
+            });
+
+            fs.writeFileSync('tmp/hotswap-test.js', `
+                module.exports = function myModule() {
+                    this.amethod = amethod;
+                    this.avariable = 'a variable';
+
+                    function amethod() {
+                        return 'something';
+                    }
+
+                    return this;
+                }
+            `);
+        });
+
+        fs.writeFileSync('tmp/hotswap-test.js', `
+            module.exports = function myModule() {
+                this.amethod = amethod;
+                this.anothermethod = anothermethod;
+                this.avariable = 'another variable';
+
+                function amethod() {
+                    return 'something else';
+                }
+
+                function anothermethod() {
+                    return 'another method returned value';
+                }
+
+                return this;
+            }
+        `);
+    });
+
+    it('should hot swap code with error', function(done) {
+        this.timeout(5000);
+
+        var acqua = new Acqua({
+            hotswap : true
+        });
+
+        if (!fs.existsSync('tmp')) {
+            fs.mkdirSync('tmp');
+        }
+
+        fs.writeFileSync('tmp/hotswap-test.js', `
+            module.exports = function myModule() {
+                this.amethod = amethod;
+                this.avariable = 'a variable';
+
+                function amethod() {
+                    return 'something';
+                }
+
+                return this;
+            }
+        `);
+
+        acqua.loadDir(path.join(__dirname, '..', 'tmp'));
+        var myModule = acqua.get('myModule');
+
+        expect(myModule.avariable).to.equal('a variable');
+        expect(myModule.amethod()).to.equal('something');
+
+        acqua.emitter.once('changeerror', () => {
+            done();
+        });
+
+        fs.writeFileSync('tmp/hotswap-test.js', `
+            module.exports = function myModule() {
+                [ // should throw syntax error
+            }
+        `);
     });
 
 });

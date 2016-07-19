@@ -1,22 +1,25 @@
-# Version 0.0.1-dev2
+# Version 0.1.0
+**[FEATURE]** Hotswap: Now possible to configure acqua for hotswap code changes
 
-First Release of Acqua
-
-# Version 0.0.1
-
-**[BUG]** Fixed problem with the module loading order
-
-# Version 0.0.2
-
-**[BUG]** Fixed a problem that was sharing every function in the same object instance, causing conflicts in 2 modules with the same function name.
-
-# Version 0.0.3
-
-**[FEATURE]** Adding the function exec to run a function injecting dependencies, example:
-
-    acqua.exec(function (dependencyOne, dependencyTwo) {
-        // function call
+    var acqua = new Acqua({
+        hotswap : true
     });
+    
+    acqua.on('change', changes => console.log(changes));
+    
+**[FEATURE]** $inject to allow minification or create aliases
+
+    anotherModule.$inject = ['oneModule'];
+    function anotherModule(a) {
+        this.oneModule = a;
+        return this;
+    }
+
+**[FEATURE]** Log colors
+
+# Version 0.0.5
+
+**[HOTFIX]** Fixed an error that was causing the acqua to print 'dependency not found' on a existant module dependency
 
 # Version 0.0.4
 
@@ -33,6 +36,22 @@ First Release of Acqua
         dependencies : [ anotherAcqua ]
     });
 
-# Version 0.0.5
+# Version 0.0.3
 
-**[HOTFIX]** Fixed an error that was causing the acqua to print 'dependency not found' on a existant module dependency
+**[FEATURE]** Adding the function exec to run a function injecting dependencies, example:
+
+    acqua.exec(function (dependencyOne, dependencyTwo) {
+        // function call
+    });
+
+# Version 0.0.2
+
+**[BUG]** Fixed a problem that was sharing every function in the same object instance, causing conflicts in 2 modules with the same function name.
+
+# Version 0.0.1
+
+**[BUG]** Fixed problem with the module loading order
+
+# Version 0.0.1-dev2
+
+First Release of Acqua

@@ -1,7 +1,7 @@
 {
   "name": "acqua",
   "version": "0.0.5",
-  "description": "A NodeJS Module for Dependency Injection",
+  "description": "A NodeJS Module Loader + Dependency Injection with code hotswap (test your code without restart)",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -12,7 +12,8 @@
   },
   "keywords": [
     "dependency injection",
-    "module loader"
+    "module loader",
+    "hotswap"
   ],
   "author": "sergiofilhow@gmail.com",
   "license": "MIT",
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/sergiofilhowz/acqua",
   "dependencies": {
+    "colors": "^1.1.2",
     "lodash": "^2.4.1",
     "path": "^0.4.9"
   },

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/sergiofilhowz/acqua.svg?branch=master)](https://travis-ci.org/sergiofilhowz/acqua) [![npm version](https://badge.fury.io/js/acqua.svg)](https://badge.fury.io/js/acqua)
 
-Acqua is a NodeJS Module for Dependency Injection.
+Acqua is a NodeJS Module Loader + Dependency Injection now with code hotswap (test your code without restart).
 
 available functions
 =====
@@ -52,6 +52,7 @@ info
 =====
 Modules must be functions, and all dependencies must be the function arguments, all modules have to return an object reference;
 
+    moduleName.$inject = ['acqua']; // <- optional, to allow minification or to use aliases
     module.exports = function moduleName (acqua) {
     	this.acqua = acqua;
     };
@@ -79,6 +80,15 @@ It's possible to exec a function loading all dependencies
     acqua.exec(function (dependencyOne, dependencyTwo) {
         // function call
     });
+    
+## Now introducing hotswap to watch file changes and test it instantly
+
+    var acqua = new Acqua({
+        hotswap : true
+    });
+    
+    // only if you want to watch over file changes
+    acqua.on('change', changes => console.log(changes));
 
 author
 =====
