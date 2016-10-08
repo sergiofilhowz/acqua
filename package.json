@@ -1,6 +1,6 @@
 {
   "name": "acqua",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A NodeJS Module Loader + Dependency Injection with code hotswap (test your code without restart)",
   "main": "index.js",
   "scripts": {
