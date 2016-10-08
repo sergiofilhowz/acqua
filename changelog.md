@@ -1,12 +1,17 @@
+# Version 0.1.1
+
+**[HOTFIX]** Added support to arrow functions
+
 # Version 0.1.0
+
 **[FEATURE]** Hotswap: Now possible to configure acqua for hotswap code changes
 
     var acqua = new Acqua({
         hotswap : true
     });
-    
+
     acqua.on('change', changes => console.log(changes));
-    
+
 **[FEATURE]** $inject to allow minification or create aliases
 
     anotherModule.$inject = ['oneModule'];

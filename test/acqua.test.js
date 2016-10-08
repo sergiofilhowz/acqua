@@ -109,8 +109,10 @@ describe('Acqua', function () {
         });
 
         acqua.exec(one => {
-            expect(one).to.be.equal(1);
+            expect(one + 1).to.be.equal(2);
         });
+
+        acqua.exec(two => expect(two + 1).to.be.equal(3));
     });
 
     it('should inject dependencies correctly with arrow function', function () {
