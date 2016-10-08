@@ -112,6 +112,11 @@ describe('Acqua', function () {
             expect(one + 1).to.be.equal(2);
         });
 
+        acqua.exec(function (three) {
+            expect(three).to.be.equal(3);
+            var a = another => console.log(another);
+        });
+
         acqua.exec(two => expect(two + 1).to.be.equal(3));
     });
 
