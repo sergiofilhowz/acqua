@@ -1,8 +1,7 @@
-var chai   = require('chai'),
-    expect = chai.expect,
-    path   = require('path'),
-    fs     = require('fs'),
-    Acqua  = require('../index');
+const { expect } = require('chai');
+const path       = require('path');
+const fs         = require('fs');
+const { Acqua }  = require('../index');
 
 describe('Acqua', function () {
 
